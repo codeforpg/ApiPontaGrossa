@@ -23,4 +23,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function identifier(){
+        return $this->hasOne('App\Identifier')->where('type','App\User')->where('value',$this->id);
+    }
 }

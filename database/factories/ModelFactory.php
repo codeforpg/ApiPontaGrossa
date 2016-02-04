@@ -19,3 +19,42 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'remember_token' => str_random(10),
     ];
 });
+
+$factory->define(App\Email::class, function (Faker\Generator $faker) {
+    return [
+        'email' => $faker->email,
+    ];
+});
+
+
+$factory->define(App\Guest::class, function (Faker\Generator $faker) {
+    return [
+        'identifier' => array_any([$faker->ipv4,$faker->ipv6]),
+    ];
+});
+
+
+$factory->define(App\Identifier::class, function (Faker\Generator $faker) {
+    $selectedClass = array_any([App\User::class,App\Email::class,App\Guest::class]);
+    return [
+        'type' => $selectedClass,
+        'value' => rand(1000,9999),
+    ];
+});
+
+$factory->define(App\PostIt::class, function (Faker\Generator $faker) {
+    return [
+        'identifier_id'=>rand(1000,9999),
+        'message'=>implode(' ',$faker->sentences),
+        'coordinates'=>[$faker->latitude,$faker->longitude],
+        'status'=>rand(1,10)
+    ];
+});
+
+$factory->define(App\Vote::class, function (Faker\Generator $faker) {
+    return [
+        'identifier_id'=>rand(1000,9999),
+        'postit_id'=>rand(1000,9999),
+        'value'=>array_any([1,-1])
+    ];
+});
