@@ -41,7 +41,7 @@ class DevSeeder extends Seeder
             $iteration->identifier()->associate($identifier);
 
         });
-        
+
         /**
          * Make 50 PostIts with Various Votes
          */

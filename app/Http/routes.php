@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -25,8 +23,14 @@ Route::get('/', function () {
 | kernel and includes session state, CSRF protection, and more.
 |
 */
-
 Route::group(['middleware' => ['web']], function () {
-    //
+    Route::get('/', function () {
+        return view('welcome');
+    });
+});
+
+Route::group(['middleware' => ['web','api'], 'prefix'=>'/api/v1','namespace'=>'Api'], function () {
+    Route::resource('postit','PostItController');
+    Route::resource('postit.vote','VoteController',['only'=>['store','delete']]);
 });
 
