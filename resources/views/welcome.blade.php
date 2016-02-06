@@ -7,11 +7,11 @@
     <div  v-for="postit in postits" class="uk-grid post-it">
      <div class="uk-width-medium-1-6">
       <div class="vote">
-       <button class="uk-button " v-on:click="vote(postit,1)" >
+       <button v-bind:class="['uk-button', (postit.hasVoted == 1) ? 'uk-button-success' : '']" v-on:click="vote(postit,1)" >
         <i class="uk-icon uk-icon-arrow-circle-up"></i>
        </button>
        <h4>@{{ postit.vote_summary  }}</h4>
-       <button class="uk-button" v-on:click="vote(postit, -1)">
+       <button v-bind:class="['uk-button', (postit.hasVoted == -1) ? 'uk-button-success' :  '']" v-on:click="vote(postit, -1)">
         <i class="uk-icon uk-icon-arrow-circle-down"></i>
        </button>
       </div>
@@ -61,7 +61,10 @@
           for(var i = 0; i<postits.length; i++){
              var postit = postits[i];
              if (postit.id == json.id){
-              postit.vote_summary = json.vote_summary;
+                 postit.vote_summary = json.vote_summary;
+                 postit.hasVoted = json.hasVoted;
+
+                 console.log(postit)
              }
           }
 

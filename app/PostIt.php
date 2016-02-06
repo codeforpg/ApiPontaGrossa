@@ -38,6 +38,14 @@ class PostIt extends Model
         return $query->where('status','>',0);
     }
 
+    public function scopeHasVoted($query, $identity){
+        return $query->leftJoin('votes', function ($join) use($identity) {
+
+            return $join->on('votes.postit_id', '=', 'post_its.id')
+                ->where('votes.identifier_id', '=', $identity->id);
+        })->select(\DB::raw('post_its.*,votes.value as hasVoted'));
+    }
+
     public function getVoteSummaryAttribute(){
         return \DB::table('votes')
             ->where('postit_id', $this->id)

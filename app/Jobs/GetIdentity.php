@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Email;
 use App\Guest;
+use App\Identifier;
 use App\Jobs\Job;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
@@ -34,62 +35,47 @@ class GetIdentity extends Job
      * Execute the job.
      *
      */
-    public function handle()
+
+    public function handle(){
+
+        $identity = $this->loadFromSession();
+        return $identity;
+    }
+    public function getModel()
     {
 
         if (\Auth::check()){
             return \Auth::user();
         }
 
-
-        $user = $this->getSession();
-        if ($user){
-            return $user;
-        }
-
         if ($this->request->hasCookie('email_user')){
             $user = Email::where('email',$this->request->cookie('email_user'));
-            $this->saveSession($user);
-            return $this->getSession();
         }
 
         if ($this->request->hasCookie('guest_user')){
            $tracker = $this->request->cookie('guest_user');
         }
-        $tracker = $this->request->getClientIp();
 
+        $tracker = $this->request->getClientIp();
         $user = Guest::firstOrCreate(['identifier'=>$tracker]);
-        $this->saveSession($user);
-        return $this->getSession();
+
+        return $user;
     }
 
-    public function getSession(){
+    public function loadFromSession(){
 
         if (\Session::has('current_user')){
-
             $data =  \Session::get('current_user');
-            switch($data['model']){
-                case 'App\User':
-                    return User::find($data['id']);
-                    break;
-                case 'App\Email':
-                    return Email::find($data['id']);
-                    break;
-                case 'App\Guest':
-                    return Guest::find($data['id']);
-                    break;
-                default:
-                    throw new \Exception("Unknown User Session");
-                    break;
-            }
+        }
+        else {
+            $model = $this->getModel();
+            $data = ['model'=>get_class($model), 'id'=>$model->id];
+            \Session::put('current_user',$data);
         }
 
-       return false;
+        $identity = Identifier::firstOrCreate(['type'=>$data['model'],'value'=>$data['id']]);
+        return $identity;
 
     }
 
-    public function saveSession(Model $model){
-        $data = ['model'=>get_class($model), 'id'=>$model->id];
-        \Session::put('current_user',$data);
-    }
 }

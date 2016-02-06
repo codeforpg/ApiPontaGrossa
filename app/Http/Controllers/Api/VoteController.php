@@ -34,7 +34,7 @@ class VoteController extends ApiController
         }
         $vote->save();
 
-        $vote->postIt->hasVoted = ($vote->value !== 0);
+        $vote->postIt->hasVoted = $vote->value;
 
         return $vote->postIt;
 

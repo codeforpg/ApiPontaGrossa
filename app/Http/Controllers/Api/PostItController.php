@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Decorators\DateFormat;
+use App\Jobs\GetIdentity;
 use App\PostIt;
 use Illuminate\Http\Request;
 
@@ -22,7 +23,9 @@ class PostItController extends ApiController
 
         $offset = ($page - 1) * $limit;
 
-        $postIts = PostIt::active()->offset($offset)->limit($limit)->get();
+        $identity = $this->dispatch(new GetIdentity($request));
+
+        $postIts = PostIt::active()->hasVoted($identity)->offset($offset)->limit($limit)->get();
 
         return $postIts;
 
