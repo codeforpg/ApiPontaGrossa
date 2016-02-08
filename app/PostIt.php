@@ -43,7 +43,8 @@ class PostIt extends Model
 
             return $join->on('votes.postit_id', '=', 'post_its.id')
                 ->where('votes.identifier_id', '=', $identity->id);
-        })->select(\DB::raw('post_its.*,votes.value as hasVoted'));
+        })->select(\DB::raw('post_its.*,votes.value as hasVoted, (select sum(votes.value) from votes where votes.postit_id = post_its.id) as totalVotes'))
+        ->orderBy(\DB::raw('DATE(post_its.created_at)'),'desc')->orderBy('totalVotes','desc');
     }
 
     public function getVoteSummaryAttribute(){

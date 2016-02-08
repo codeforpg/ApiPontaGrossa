@@ -1,33 +1,25 @@
 @extends('layouts.default')
 @section('body')
-<div class="uk-container uk-container-center">
- <div class="uk-grid">
-  <div class="uk-width-1-1">
-   <div id="post_its" class="post-its">
-    <div  v-for="postit in postits" class="uk-grid post-it">
-     <div class="uk-width-medium-1-6">
-      <div class="vote">
-       <button v-bind:class="['uk-button', (postit.hasVoted == 1) ? 'uk-button-success' : '']" v-on:click="vote(postit,1)" >
-        <i class="uk-icon uk-icon-arrow-circle-up"></i>
-       </button>
-       <h4>@{{ postit.vote_summary  }}</h4>
-       <button v-bind:class="['uk-button', (postit.hasVoted == -1) ? 'uk-button-success' :  '']" v-on:click="vote(postit, -1)">
-        <i class="uk-icon uk-icon-arrow-circle-down"></i>
-       </button>
-      </div>
-     </div>
-     <div class="uk-width-medium-5-6">
-      <blockquote>
-       @{{ postit.message }}
-       <hr>
-       <i>@{{ postit.created_at }}</i>
-      </blockquote>
-     </div>
+<div class="mui-container post-its"  id="post_its" >
+    <div  v-for="postit in postits" class="mui-row post-it uk-panel-box uk-margin-top">
+         <div class="mui-col-md-1">
+              <div class="vote mui--text-center">
+               <button v-bind:class="['mui-btn', (postit.hasVoted == 1) ? 'mui-btn--accent' : '']" v-on:click="vote(postit,1)" >
+                <i class="uk-icon uk-icon-arrow-circle-up"></i>
+               </button>
+               <h3>@{{ postit.vote_summary  }}</h3>
+               <button v-bind:class="['mui-btn', (postit.hasVoted == -1) ? 'mui-btn--accent' :  '']" v-on:click="vote(postit, -1)">
+                <i class="uk-icon uk-icon-arrow-circle-down"></i>
+               </button>
+              </div>
+         </div>
+         <div class="mui-col-md-11 mui-panel mui--text-body1">
+             @{{ postit.message }}
+             <div class="mui-divider"></div>
+             <i>@{{ postit.created_at }}</i>
+         </div>
     </div>
-    </div>
-   </div>
-  </div>
- </div>
+    <div id="bottom_div">&nbsp;</div>
 </div>
 @stop
 
@@ -63,10 +55,12 @@
              if (postit.id == json.id){
                  postit.vote_summary = json.vote_summary;
                  postit.hasVoted = json.hasVoted;
-
-                 console.log(postit)
              }
           }
+
+           postits.sort(function(a,b){
+               return parseInt(a.vote_summary) <= parseInt(b.vote_summary)
+           })
 
          PostIt.$set('postits',postits);
        }
@@ -77,14 +71,33 @@
 
   });
 
-  $(function(){
-   $.ajax({
-    url: '{{route('api.v1.postit.index')}}',
-    data : {},
-    success:function(json){
-     PostIt.$set('postits',json);
-    }
-   })
-  });
+    $(function(){
+
+        var currentPage=1;
+        var lastResult=1;
+        var AddPage = function(page){
+            $.ajax({
+                url: '{{route('api.v1.postit.index')}}',
+                data : {
+                    page:page
+                },
+                success:function(json){
+                    PostIt.$set('postits',PostIt.postits.concat(json));
+                    currentPage = page;
+                    lastResult = json.length;
+                }
+            })
+        }
+
+        $(window).scroll(function() {
+            if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+                if (lastResult > 0){
+                    AddPage(currentPage + 1)
+                }
+            }
+        });
+
+        AddPage(1)
+    });
  </script>
 @append
