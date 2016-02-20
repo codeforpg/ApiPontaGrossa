@@ -5,3 +5,7 @@
 .app-inline{
     display:inline-block;
 }
+.app-margin-0{
+    padding-left:0;
+    margin-left:0;
+}

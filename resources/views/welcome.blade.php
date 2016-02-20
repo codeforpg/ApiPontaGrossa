@@ -15,35 +15,30 @@
         <div class="uk-grid">
             <div class="uk-width-medium-1-2">
                 <h2>Mais Novos</h2>
-                <div  v-for="postit in newest" class="post-it uk-panel ">
-                    <div class="vote">
-                        <div class="uk-float-left">
-                            <div class="vote uk-text-left">
-                                <button v-bind:class="['uk-button', (postit.hasVoted == 1) ? 'uk-button-success' : '']" v-on:click="vote(postit,1,'newest')">
-                                    <i class="uk-icon uk-icon-arrow-circle-up"></i>
-                                </button>
-                                <h3 class="app-inline uk-margin-remove">@{{ postit.vote_summary  }}</h3>
-                                <button v-bind:class="['uk-button', (postit.hasVoted == -1) ? 'uk-button-success' :  '']" v-on:click="vote(postit, -1,'newest')">
-                                    <i class="uk-icon uk-icon-arrow-circle-down"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="uk-clearfix">
-
-                            <i>@{{ postit.created_at }}</i>
+                <div  v-for="postit in newest" class="uk-grid post-it uk-panel-box  uk-margin-remove app-margin-0">
+                    <div class="uk-width-medium-1-6 uk-width-small-1-4 uk-margin-remove app-margin-0">
+                        <div class="vote uk-text-center">
+                            <button v-bind:class="['uk-button', (postit.hasVoted == 1) ? 'uk-button-success' : '']" v-on:click="vote(postit,1,'newest')" >
+                                <i class="uk-icon uk-icon-arrow-circle-up"></i>
+                            </button>
+                            <h3>@{{ postit.vote_summary  }}</h3>
+                            <button v-bind:class="['uk-button', (postit.hasVoted == -1) ? 'uk-button-success' :  '']" v-on:click="vote(postit, -1,'newest')">
+                                <i class="uk-icon uk-icon-arrow-circle-down"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="post uk-panel-box uk-margin-remove">
+                    <div class="uk-width-medium-6-6 uk-width-small-3-4">
                         @{{{ postit.message }}}
+                        <div class="mui-divider"></div>
+                        <i>@{{ postit.created_at }}</i>
                     </div>
                 </div>
-                <hr>
-                <button onclick="AddPage('age','newest')" class="uk-margin-remove uk-button  uk-width-1-1">Add more</button>
+                <button onclick="AddPage('age','newest')" class="uk-margin-remove uk-button uk-button-primary  uk-width-1-1">Add more</button>
             </div>
             <div class="uk-width-medium-1-2">
                 <h2>Mais Curtidos</h2>
-                <div  v-for="postit in most_voted" class="uk-grid post-it uk-panel-box  uk-margin-remove">
-                    <div class="uk-width-medium-1-6 uk-width-small-1-4">
+                <div  v-for="postit in most_voted" class="uk-grid post-it uk-panel-box  uk-margin-remove app-margin-0">
+                    <div class="uk-width-medium-1-6 uk-width-small-1-4 app-margin-0">
                         <div class="vote uk-text-center">
                             <button v-bind:class="['uk-button', (postit.hasVoted == 1) ? 'uk-button-success' : '']" v-on:click="vote(postit,1,'most_voted')" >
                                 <i class="uk-icon uk-icon-arrow-circle-up"></i>
@@ -60,7 +55,7 @@
                         <i>@{{ postit.created_at }}</i>
                     </div>
                 </div>
-                <button onclick="AddPage('votes','most_voted')" class="uk-margin-remove uk-button uk-width-1-1">Add more</button>
+                <button onclick="AddPage('votes','most_voted')" class="uk-margin-remove  uk-button-primary uk-button uk-width-1-1">Add more</button>
             </div>
         </div>
     </div>
