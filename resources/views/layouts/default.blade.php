@@ -21,6 +21,7 @@
         @yield('body')
         <script src="https://cdn.jsdelivr.net/g/jquery@3.0.0-alpha1,vue@1.0.7,uikit@2.22.0,uikit@2.22.0(js/components/notify.min.js),sweetalert@1.1.3"></script>
         <script src="//cdn.muicss.com/mui-0.4.4/js/mui.min.js"></script>
+        <script src="https://raw.githubusercontent.com/morr/jquery.appear/master/jquery.appear.js"></script>
         <script type="text/javascript" src="/assets/js/app.js"></script>
         @yield('scripts')
     </body>

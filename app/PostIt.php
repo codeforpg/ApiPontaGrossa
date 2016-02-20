@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Parsedown;
 
 class PostIt extends Model
 {
@@ -34,8 +35,20 @@ class PostIt extends Model
         return ['lat'=>(float) $lat,'lon'=>(float) $lng];
     }
 
+    public function getMessageAttribute($value){
+        return with(new Parsedown())->text($value);
+    }
+
     public function scopeActive($query){
         return $query->where('status','>',0);
+    }
+
+    public function scopeLatest($query){
+        return $query->whereRaw(\DB::raw('post_its.created_at > (NOW() - INTERVAL 7 DAY)'));
+    }
+
+    public function scopeAged($query){
+        return $query->whereRaw(\DB::raw('post_its.created_at < (NOW() - INTERVAL 7 DAY)'));
     }
 
     public function scopeHasVoted($query, $identity){
@@ -43,8 +56,16 @@ class PostIt extends Model
 
             return $join->on('votes.postit_id', '=', 'post_its.id')
                 ->where('votes.identifier_id', '=', $identity->id);
-        })->select(\DB::raw('post_its.*,votes.value as hasVoted, (select sum(votes.value) from votes where votes.postit_id = post_its.id) as totalVotes'))
-        ->orderBy(\DB::raw('DATE(post_its.created_at)'),'desc')->orderBy('totalVotes','desc');
+        })->select(\DB::raw('post_its.*,votes.value as hasVoted, (select sum(votes.value) from votes where votes.postit_id = post_its.id) as totalVotes'));
+
+    }
+
+    public function scopeSortVotes($query){
+        return $query->orderBy('totalVotes','desc');
+    }
+
+    public function scopeSortAge($query){
+        return $query->orderBy(\DB::raw('post_its.created_at'),'desc');
     }
 
     public function getVoteSummaryAttribute(){

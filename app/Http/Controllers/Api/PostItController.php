@@ -17,7 +17,7 @@ class PostItController extends ApiController
 
         $page = $request->get('page',1);
         $limit = $request->get('limit',20);
-
+        $sort = $request->get('sort','votes');
         if ($limit < 0 || $limit > 50) {
             $limit = 20;
         }
@@ -25,7 +25,16 @@ class PostItController extends ApiController
         $offset = ($page - 1) * $limit;
 
 
-        $postIts = PostIt::active()->hasVoted($this->getIdentity($request))->offset($offset)->limit($limit)->get();
+        $query = PostIt::active()->hasVoted($this->getIdentity($request))->offset($offset)->limit($limit);
+
+        if ($sort == 'votes'){
+            $query->sortVotes()->aged();
+        }
+        else {
+            $query->sortAge()->latest();
+        }
+
+        $postIts = $query->get();
 
         return $postIts;
 

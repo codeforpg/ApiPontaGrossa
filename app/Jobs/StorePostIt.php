@@ -35,7 +35,6 @@ class StorePostIt extends Job
     /**
      * Execute the job.
      *
-     * @return void
      */
     public function handle()
     {
@@ -45,7 +44,7 @@ class StorePostIt extends Job
             'required'=>'o campo :attribute é obrigatório'
         ]);
 
-        $postit = new PostIt($this->request->only('message'));
+        $postit = new PostIt($this->request->only('message') + ['status'=>10]);
         $postit->identifier()->associate($this->identifier);
         $postit->save();
 
