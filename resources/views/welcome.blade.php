@@ -11,10 +11,14 @@
             </div>
         </div>
     </div>
+    <hr/>
     <div class="uk-container uk-container-center post-its" id="post_its">
-        <div class="uk-grid">
-            <div class="uk-width-medium-1-2">
-                <h2>Mais Novos</h2>
+        <ul class="uk-tab" data-uk-tab>
+            <li class="uk-active"><a href="javascript:;" v-on:click="show = 'new'">Mais Novos (@{{ newest.length }})</a></li>
+            <li><a href="javascript:;"  v-on:click="show = 'best'">Mais Curtidos (@{{ most_voted.length }})</a></li>
+        </ul>
+        <div class="uk-grid uk-margin-top">
+            <div class="uk-width-1-1" v-if="show == 'new'">
                 <div  v-for="postit in newest" class="uk-grid post-it uk-panel-box  uk-margin-remove app-margin-0">
                     <div class="uk-width-medium-1-6 uk-width-small-1-4 uk-margin-remove app-margin-0">
                         <div class="vote uk-text-center">
@@ -35,8 +39,7 @@
                 </div>
                 <button onclick="AddPage('age','newest')" class="uk-margin-remove uk-button uk-button-primary  uk-width-1-1">Add more</button>
             </div>
-            <div class="uk-width-medium-1-2">
-                <h2>Mais Curtidos</h2>
+            <div class="uk-width-1-1" v-if="show=='best'">
                 <div  v-for="postit in most_voted" class="uk-grid post-it uk-panel-box  uk-margin-remove app-margin-0">
                     <div class="uk-width-medium-1-6 uk-width-small-1-4 app-margin-0">
                         <div class="vote uk-text-center">
@@ -100,7 +103,8 @@ var PostIt = new Vue({
 
     data: {
         newest: [],
-        most_voted: []
+        most_voted: [],
+        show: 'new'
     },
 
     methods: {
@@ -180,8 +184,6 @@ $(function(){
         autofocus: true,
         spellChecker: false,
     });
-
-
 
     AddPage('age','newest')
     AddPage('votes','most_voted')
