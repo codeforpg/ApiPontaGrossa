@@ -3,15 +3,6 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
 @stop
 @section('body')
-    <div class="uk-container uk-container-center">
-        <div class="uk-grid" id="postit_form">
-            <div class="uk-width-1-1">
-                <textarea id="novo_postit" class="uk-width-1-1"></textarea>
-                <button class="uk-button uk-button-primary uk-button-large uk-width-1-1" v-on:click="submitPostIt" >Submit</button>
-            </div>
-        </div>
-    </div>
-    <hr/>
     <div class="uk-container uk-container-center post-its" id="post_its">
         <ul class="uk-tab" data-uk-tab>
             <li class="uk-active"><a href="javascript:;" v-on:click="show = 'new'">Mais Novos (@{{ newest.length }})</a></li>
@@ -37,7 +28,7 @@
                         <i>@{{ postit.created_at }}</i>
                     </div>
                 </div>
-                <button onclick="AddPage('age','newest')" class="uk-margin-remove uk-button uk-button-primary  uk-width-1-1">Add more</button>
+                <button onclick="AddPage('age','newest')" class="uk-button uk-width-1-1 uk-margin-top">Mais PostIts</button>
             </div>
             <div class="uk-width-1-1" v-if="show=='best'">
                 <div  v-for="postit in most_voted" class="uk-grid post-it uk-panel-box  uk-margin-remove app-margin-0">
@@ -58,7 +49,20 @@
                         <i>@{{ postit.created_at }}</i>
                     </div>
                 </div>
-                <button onclick="AddPage('votes','most_voted')" class="uk-margin-remove  uk-button-primary uk-button uk-width-1-1">Add more</button>
+                <button onclick="AddPage('votes','most_voted')" class="uk-button uk-width-1-1 uk-margin-top">Mais PostIts</button>
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+    <div style="background-color: #eee; padding-top: 20px; padding-bottom: 20px;">
+        <a name="novo"></a>
+        <div class="uk-container uk-container-center">
+            <div class="uk-grid" id="postit_form">
+                <div class="uk-width-1-1">
+                    <textarea id="novo_postit" class="uk-width-1-1"></textarea>
+                    <button class="uk-button uk-button-primary uk-button-large uk-width-1-1" v-on:click="submitPostIt" >Enviar</button>
+                </div>
             </div>
         </div>
     </div>
