@@ -9,7 +9,7 @@ class PostIt extends Model
 {
     protected $fillable = ['identifier_id','message','coordinates','status'];
     protected $hidden = ['identifier_id'];
-    protected $appends = ['vote_summary'];
+    protected $appends = ['vote_summary','url'];
 
     public function identifier(){
         return $this->belongsTo('App\Identifier');
@@ -72,6 +72,10 @@ class PostIt extends Model
         return \DB::table('votes')
             ->where('postit_id', $this->id)
             ->sum('value');
+    }
+
+    public function getUrlAttribute(){
+        return route('api.v1.postit.show',['postit'=>$this->id]);
     }
 
 

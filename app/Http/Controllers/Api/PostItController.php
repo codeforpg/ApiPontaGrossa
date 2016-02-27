@@ -40,6 +40,11 @@ class PostItController extends ApiController
 
     }
 
+    public function show($postit, Request $request){
+        $postit = PostIt::where(['post_its.id'=>$postit])->hasVoted($this->getIdentity($request))->first();
+        return $postit;
+    }
+
     public function create(Request $request){}
     public function edit(Request $request){}
     public function store(Request $request){
