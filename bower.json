@@ -1,0 +1,22 @@
+{
+  "name": "PostIt",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Rulian Estivalletti <rulian.estivalletti@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/codeforpg/PostIt",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "mui": "^0.5.3",
+    "react": "^15.0.1"
+  }
+}

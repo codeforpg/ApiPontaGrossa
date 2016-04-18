@@ -3,195 +3,165 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
 @stop
 @section('body')
-    <div class="uk-container uk-container-center post-its" id="post_its">
-        <ul class="uk-tab" data-uk-tab>
-            <li class="uk-active"><a href="javascript:;" v-on:click="show = 'new'">Mais Novos (@{{ newest.length }})</a></li>
-            <li><a href="javascript:;"  v-on:click="show = 'best'">Mais Curtidos (@{{ most_voted.length }})</a></li>
-        </ul>
-        <div class="uk-grid uk-margin-top">
-            <div class="uk-width-1-1" v-if="show == 'new'">
-                <div  v-for="postit in newest">
-                    <postit :postit="postit" target="newest"></postit>
-                </div>
-                <button onclick="AddPage('age','newest')" class="uk-button uk-width-1-1 uk-margin-top">Mais PostIts</button>
-            </div>
-            <div class="uk-width-1-1" v-if="show=='best'">
-                <div  v-for="postit in most_voted">
-                    <postit :postit="postit" target="most_voted"></postit>
-                </div>
-                <button onclick="AddPage('votes','most_voted')" class="uk-button uk-width-1-1 uk-margin-top">Mais PostIts</button>
-            </div>
-        </div>
-    </div>
+    <div id="content"></div>
 
-    <hr/>
-    <div style="background-color: #eee; padding-top: 20px; padding-bottom: 20px;">
-        <a name="novo"></a>
-        <div class="uk-container uk-container-center">
-            <div class="uk-grid" id="postit_form">
-                <div class="uk-width-1-1">
-                    <textarea id="novo_postit" class="uk-width-1-1"></textarea>
-                    <button class="uk-button uk-button-primary uk-button-large uk-width-1-1" v-on:click="submitPostIt" >Enviar</button>
-                </div>
-            </div>
-        </div>
-    </div>
 @stop
-
 
 @section('scripts')
     <script src="//cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-<script type="text/html" id="template-postit">
-    <div class="uk-grid post-it uk-panel-box  uk-margin-remove app-margin-0">
-        <div class="uk-width-medium-1-6 uk-width-small-1-4 app-margin-0">
-            <div class="vote uk-text-center">
-                <button v-bind:class="['uk-button', (postit.hasVoted == 1) ? 'uk-button-success' : '']" v-on:click="vote(postit,1,target)" >
-                    <i class="uk-icon uk-icon-arrow-circle-up"></i>
-                </button>
-                <h3>@{{ postit.vote_summary  }}</h3>
-                <button v-bind:class="['uk-button', (postit.hasVoted == -1) ? 'uk-button-success' :  '']" v-on:click="vote(postit, -1,target)">
-                    <i class="uk-icon uk-icon-arrow-circle-down"></i>
-                </button>
-            </div>
-        </div>
-        <div class="uk-width-medium-6-6 uk-width-small-3-4">
-            @{{{ postit.message }}}
-            <div class="mui-divider"></div>
-            <a href="@{{ postit.url }}" class="uk-button">Ver PostIt</a><br>
-            <i>@{{ postit.created_at }}</i>
-        </div>
-    </div>
-</script>
- <script type="text/javascript">
-
-     var simplemde;
-
-     var PostItRow = Vue.extend({
-         props: ['postit','target'],
-         template: $('#template-postit').html(),
-         methods: {
-             vote: function(postit, value,target){
-                 $.ajax({
-                     url: '{{route('api.v1.postit.vote.store',['postit'=>'#postit'])}}'.replace('#postit',postit.id),
-                     method: 'post',
-                     data : {
-                         _token: '{{csrf_token()}}',
-                         postit_id: postit.id,
-                         value: value
-                     },
-                     success:function(json){
-                         PostIt.update(json,target);
-                         PostIt.resort(target);
-                     }
-                 })
-
-             }
-         }
-     })
-
-     Vue.component('postit', PostItRow)
-     var SubmitPost = new Vue({
-
-         el: '#postit_form',
-
-         methods: {
-
-             submitPostIt: function(){
-
-                 $.ajax({
-                     url: '{{route('api.v1.postit.store')}}',
-                     method: 'post',
-                     data : {
-                         _token: '{{csrf_token()}}',
-                         message: simplemde.value()
-                     },
-                     success:function(json){
-                         simplemde.value('')
-                         PostIt.add(json);
-                     }
-                 })
-
-             }
-         }
-
-     });
-
-    var PostIt = new Vue({
-
-        el: '#post_its',
-
-        data: {
-            newest: [],
-            most_voted: [],
-            show: 'new'
-        },
-
-        methods: {
-
-
-
-            add: function(json){
-                var postits = PostIt.newest;
-                console.log(json,[json].concat(postits));
-                PostIt.$set('newest',[json].concat(postits));
+    <script type="text/babel">
+        var Create = React.createClass({
+            getInitialState: function(){
+                return {
+                    simplemde : null
+                }
             },
+            componentDidMount: function() {
+                this.setState({
+                    simplemde: new SimpleMDE({
+                        element: document.getElementById("novo_postit"),
+                        autofocus: true,
+                        spellChecker: false,
+                    })
+                })
+            },
+            create: function(){
+                var ref = this;
+                $.ajax({
+                    url: '{{route('api.v1.postit.store')}}',
+                    method: 'post',
+                    data : {
+                        _token: '{{csrf_token()}}',
+                        message:  ref.state.simplemde.value()
+                    },
+                    success:function(json){
+                        ref.state.simplemde.value('')
+                        ref.props.list.addPostIt(json)
 
-            update: function(json,target){
-
-                var postits = PostIt[target];
-
-                for(var i = 0; i<postits.length; i++){
-                    var postit = postits[i];
-                    if (postit.id == json.id){
-                        postit.vote_summary = json.vote_summary;
-                        postit.hasVoted = json.hasVoted;
+                    }
+                })
+            },
+            render: function(){
+                var styles = {
+                    container: {
+                        paddingTop: "20px",
+                        paddingBottom: "20px"
                     }
                 }
-
-                PostIt.$set(target,postits);
-            },
-            resort: function(target){
-                var postits = PostIt[target];
-                postits.sort(function(a,b){
-                    return parseInt(a.vote_summary) <= parseInt(b.vote_summary)
-                })
-                PostIt.$set(target,postits);
+                return (
+                        <div style={styles.container}>
+                            <div className="mui-panel">
+                                <div className="mui-row" id="postit_form">
+                                    <div className="mui-col-xs-12">
+                                        <textarea id="novo_postit" className="mui-col-xs-12"></textarea>
+                                        <button className="mui-btn mui-btn--raised mui-btn--accent mui-col-xs-12" onClick={this.create}>Enviar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                )
             }
-        }
-    });
+        })
+        var PostIt = React.createClass({
+            getInitialState : function(){
+                return {
+                    hasVoted : this.props.item.hasVoted,
+                    currentVote: this.props.item.vote_summary
+                }
+            },
+            getClasses : function(condition){
+                return "mui-btn mui-btn--raised mui-btn--small " + ( this.state.hasVoted == condition ? 'mui-btn--primary' : '');
+            },
+            voteUp : function(){
+                this.vote(1);
+            },
+            voteDown: function(){
+                this.vote(-1)
+            },
+            vote: function(direction){
+                var ref = this;
+                $.ajax({
+                    url: '{{route('api.v1.postit.vote.store',['postit'=>'#postit'])}}'.replace('#postit',ref.props.item.id),
+                    method: 'post',
+                    data : {
+                        _token: '{{csrf_token()}}',
+                        postit_id: ref.props.item.id,
+                        value: direction
+                    },
+                    success:function(json){
+                        ref.setState({
+                            hasVoted : json.hasVoted,
+                            currentVote: json.vote_summary
+                        })
+                    }
+                })
+            },
+            render: function(){
+                return (
+                    <div className="mui-row mui--text-left mui-panel">
+                        <div className="mui-col-xs-2 mui--text-center">
+                            <button className={this.getClasses(1)} onClick={this.voteUp}>
+                                <i className="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                            </button>
+                            <h3>{this.state.currentVote}</h3>
+                            <button className={this.getClasses(-1)} onClick={this.voteDown}>
+                                <i className="fa fa-thumbs-o-down" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div className="mui-col-xs-10">
+                            <div className="mui-panel" dangerouslySetInnerHTML=@{{__html: this.props.item.message}}></div>
+                        </div>
+                    </div>
+                )
+            }
+        })
+        var PostItList = React.createClass({
+            getInitialState : function(){
+              return {
+                  postits : [],
+                  page: 1
+              }
+            },
+            getPage: function(page){
+                var ref = this;
+                $.ajax({
+                    url: '{{route('api.v1.postit.index')}}',
+                    data : {
+                        page: page,
+                        sort: this.props.sort
+                    },
+                    success:function(json){
+                        ref.setState({postits: ref.state.postits.concat(json)});
+                    }
+                })
+            },
+            addPostIt: function(json){
+                this.setState({postits: [json].concat(this.state.postits)});
+            },
+            componentDidMount: function() {
+                this.getPage(this.state.page);
+            },
+            render: function() {
+                var postits = this.state.postits;
+                var PostItDom = postits.map(function(postit){
+                    return (
+                        <PostIt item={postit}/>
+                    )
+                })
 
-    var current = {
-        age: 0,
-        votes: 0
-    };
-
-    var AddPage = function(sort,target){
-         var page = current[sort]++;
-         $.ajax({
-             url: '{{route('api.v1.postit.index')}}',
-             data : {
-                 page: page,
-                 sort: sort
-             },
-             success:function(json){
-                 PostIt.$set(target,PostIt[target].concat(json));
-                 currentPage = page;
-                 lastResult = json.length;
-             }
-         })
-    }
-
-$(function(){
-    simplemde = new SimpleMDE({
-        element: document.getElementById("novo_postit"),
-        autofocus: true,
-        spellChecker: false,
-    });
-
-    AddPage('age','newest')
-    AddPage('votes','most_voted')
-});
+                return (
+                    <div>
+                        {PostItDom}
+                        <Create list={this}/>
+                    </div>
+                );
+            }
+        });
 
 
- </script>
+        ReactDOM.render(
+            <PostItList sort='newest'/>,
+            document.getElementById('content')
+        );
+    </script>
 @append
