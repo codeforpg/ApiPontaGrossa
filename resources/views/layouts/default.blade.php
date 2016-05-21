@@ -18,16 +18,15 @@
                 <table width="100%">
                     <tr class="mui--appbar-height">
                         <td class="mui--text-title">Post It :: Code for Ponta Grossa</td>
-                        <td align="right">
-                            test
-                        </td>
                     </tr>
                 </table>
             </div>
         </header>
         <div class="mui-container-fluid">
             <div class="mui--appbar-height"></div>
+            <div class="mui-container">
             @yield('body')
+            </div>
         </div>
         <footer>
             <div class="mui-container mui--text-center">

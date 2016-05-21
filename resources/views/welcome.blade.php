@@ -49,16 +49,12 @@
                     }
                 }
                 return (
-                        <div style={styles.container}>
-                            <div className="mui-panel">
-                                <div className="mui-row" id="postit_form">
-                                    <div className="mui-col-xs-12">
-                                        <textarea id="novo_postit" className="mui-col-xs-12"></textarea>
-                                        <button className="mui-btn mui-btn--raised mui-btn--accent mui-col-xs-12" onClick={this.create}>Enviar</button>
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="mui-row" id="postit_form" style={styles.container}>
+                        <div className="mui-col-xs-12">
+                            <textarea id="novo_postit" className="mui-col-xs-12"></textarea>
+                            <button className="mui-btn mui-btn--raised mui-btn--primary mui-col-xs-12" onClick={this.create}>Enviar</button>
                         </div>
+                    </div>
                 )
             }
         })
@@ -98,18 +94,22 @@
             },
             render: function(){
                 return (
-                    <div className="mui-row mui--text-left mui-panel">
-                        <div className="mui-col-xs-2 mui--text-center">
-                            <button className={this.getClasses(1)} onClick={this.voteUp}>
-                                <i className="fa fa-thumbs-o-up" aria-hidden="true"></i>
-                            </button>
-                            <h3>{this.state.currentVote}</h3>
-                            <button className={this.getClasses(-1)} onClick={this.voteDown}>
-                                <i className="fa fa-thumbs-o-down" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                        <div className="mui-col-xs-10">
-                            <div className="mui-panel" dangerouslySetInnerHTML=@{{__html: this.props.item.message}}></div>
+                    <div className="mui-row mui--text-left">
+                        <div className='mui-col-xs-12'>
+                            <div className='mui-panel'>
+                                <div className="mui-col-xs-1 mui--text-center">
+                                <button className={this.getClasses(1)} onClick={this.voteUp}>
+                                    <i className="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                                </button>
+                                <h3>{this.state.currentVote}</h3>
+                                <button className={this.getClasses(-1)} onClick={this.voteDown}>
+                                    <i className="fa fa-thumbs-o-down" aria-hidden="true"></i>
+                                </button>
+                                </div>
+                                <div className="mui-col-xs-11">
+                                <div dangerouslySetInnerHTML=@{{__html: this.props.item.message}}></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )
